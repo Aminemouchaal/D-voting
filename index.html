@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decentralized Voting Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.2.9/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-black bg-opacity-30 backdrop-blur-lg border-b border-white border-opacity-20">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h1 class="text-2xl font-bold text-white">VoteChain</h1>
+        </div>
+        <div id="wallet-info" class="hidden">
+          <div
+            class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg px-4 py-2 border border-white border-opacity-20">
+            <p class="text-xs text-gray-300">Connected Wallet</p>
+            <p id="wallet-address" class="text-sm font-mono text-white"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+
+    <!-- Connection Screen -->
+    <div id="connect-screen" class="max-w-md mx-auto text-center">
+      <div
+        class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 border border-white border-opacity-20 shadow-2xl">
+        <div
+          class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+            </path>
+          </svg>
+        </div>
+        <h2 class="text-3xl font-bold text-white mb-4">Connect Your Wallet</h2>
+        <p class="text-gray-300 mb-6">Please connect your MetaMask wallet to participate in voting</p>
+        <button id="connect-button"
+          class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+          Connect MetaMask
+        </button>
+        <p id="connection-error" class="text-red-400 text-sm mt-4 hidden"></p>
+      </div>
+    </div>
+
+    <!-- Main Voting Interface -->
+    <div id="voting-interface" class="hidden">
+
+      <!-- Stats Overview -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div
+          class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-6 border border-white border-opacity-20 transform hover:scale-105 transition duration-300">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-300 text-sm">Total Voters</p>
+              <p id="total-voters" class="text-4xl font-bold text-white mt-2">0</p>
+            </div>
+            <div class="w-14 h-14 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+              <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                </path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-6 border border-white border-opacity-20 transform hover:scale-105 transition duration-300">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-300 text-sm">Total Votes Cast</p>
+              <p id="total-votes" class="text-4xl font-bold text-white mt-2">0</p>
+            </div>
+            <div class="w-14 h-14 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+              <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                </path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-6 border border-white border-opacity-20 transform hover:scale-105 transition duration-300">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-300 text-sm">Leading Candidate</p>
+              <p id="leading-candidate" class="text-2xl font-bold text-white mt-2">-</p>
+            </div>
+            <div class="w-14 h-14 bg-pink-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+              <svg class="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                </path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Voting Form -->
+        <div class="lg:col-span-1">
+          <div
+            class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6">Cast Your Vote</h2>
+
+            <div class="mb-6">
+              <label class="block text-gray-300 text-sm font-semibold mb-2">Select Candidate</label>
+              <select id="candidate-select"
+                class="w-full bg-white bg-opacity-5 border border-white border-opacity-20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition">
+                <option value="">Choose a candidate...</option>
+                <option value="Mohamed">Mohamed</option>
+                <option value="Omar">Omar</option>
+                <option value="Ali">Ali</option>
+              </select>
+            </div>
+
+            <button id="vote-button"
+              class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+              <span id="vote-button-text">Cast Vote</span>
+            </button>
+
+            <div id="vote-status" class="mt-4 hidden">
+              <div class="bg-green-500 bg-opacity-20 border border-green-500 border-opacity-40 rounded-lg p-4">
+                <p class="text-green-300 text-sm font-semibold">✓ Vote Successfully Cast!</p>
+              </div>
+            </div>
+
+            <div id="vote-error" class="mt-4 hidden">
+              <div class="bg-red-500 bg-opacity-20 border border-red-500 border-opacity-40 rounded-lg p-4">
+                <p class="text-red-300 text-sm font-semibold"></p>
+              </div>
+            </div>
+
+            <!-- Your Vote Status -->
+            <div class="mt-6 p-4 bg-yellow-500 bg-opacity-10 border border-yellow-500 border-opacity-30 rounded-lg">
+              <p class="text-yellow-300 text-sm">
+                <span class="font-semibold">Your Vote:</span> <span id="user-vote-status">Not yet voted</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Display -->
+        <div class="lg:col-span-2">
+          <div
+            class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 shadow-2xl mb-6">
+            <h2 class="text-2xl font-bold text-white mb-6">Live Results</h2>
+
+            <!-- Candidate Cards -->
+            <div class="space-y-4" id="candidates-container">
+              <!-- Mohamed -->
+              <div
+                class="bg-white bg-opacity-5 rounded-xl p-4 border border-white border-opacity-10 hover:bg-opacity-10 transition">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center space-x-3">
+                    <div
+                      class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                      M
+                    </div>
+                    <div>
+                      <h3 class="text-white font-bold text-lg">Mohamed</h3>
+                      <p class="text-gray-400 text-sm"><span id="Mohamed-votes">0</span> votes</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p id="Mohamed-percentage" class="text-3xl font-bold text-white">0%</p>
+                  </div>
+                </div>
+                <div class="w-full bg-gray-700 bg-opacity-50 rounded-full h-3 overflow-hidden">
+                  <div id="Mohamed-bar"
+                    class="bg-gradient-to-r from-blue-400 to-blue-600 h-3 rounded-full transition-all duration-500"
+                    style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- Omar -->
+              <div
+                class="bg-white bg-opacity-5 rounded-xl p-4 border border-white border-opacity-10 hover:bg-opacity-10 transition">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center space-x-3">
+                    <div
+                      class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                      O
+                    </div>
+                    <div>
+                      <h3 class="text-white font-bold text-lg">Omar</h3>
+                      <p class="text-gray-400 text-sm"><span id="Omar-votes">0</span> votes</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p id="Omar-percentage" class="text-3xl font-bold text-white">0%</p>
+                  </div>
+                </div>
+                <div class="w-full bg-gray-700 bg-opacity-50 rounded-full h-3 overflow-hidden">
+                  <div id="Omar-bar"
+                    class="bg-gradient-to-r from-purple-400 to-purple-600 h-3 rounded-full transition-all duration-500"
+                    style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- Ali -->
+              <div
+                class="bg-white bg-opacity-5 rounded-xl p-4 border border-white border-opacity-10 hover:bg-opacity-10 transition">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center space-x-3">
+                    <div
+                      class="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                      A
+                    </div>
+                    <div>
+                      <h3 class="text-white font-bold text-lg">Ali</h3>
+                      <p class="text-gray-400 text-sm"><span id="Ali-votes">0</span> votes</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p id="Ali-percentage" class="text-3xl font-bold text-white">0%</p>
+                  </div>
+                </div>
+                <div class="w-full bg-gray-700 bg-opacity-50 rounded-full h-3 overflow-hidden">
+                  <div id="Ali-bar"
+                    class="bg-gradient-to-r from-pink-400 to-pink-600 h-3 rounded-full transition-all duration-500"
+                    style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div
+            class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6">Vote Distribution</h2>
+            <div class="bg-white bg-opacity-5 rounded-xl p-4">
+              <canvas id="voteChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let web3;
+    let contract;
+    let accounts;
+    let userHasVoted = false;
+    let votedFor = null;
+    let chart;
+
+    const contractAddress = '0xaE17c3C594747ED538C29bFFAa2A2cC06a84ea60';
+    const abi = [
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "candidate",
+            "type": "string"
+          }
+        ],
+        "name": "voteForCandidate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string[]",
+            "name": "candidateNames",
+            "type": "string[]"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "candidateList",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "candidate",
+            "type": "string"
+          }
+        ],
+        "name": "totalVotesFor",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "candidate",
+            "type": "string"
+          }
+        ],
+        "name": "validCandidate",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "name": "votesReceived",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+
+    // Initialize Chart
+    function initChart() {
+      const ctx = document.getElementById('voteChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Mohamed', 'Omar', 'Ali'],
+          datasets: [{
+            data: [0, 0, 0],
+            backgroundColor: [
+              'rgba(96, 165, 250, 0.8)',
+              'rgba(192, 132, 252, 0.8)',
+              'rgba(244, 114, 182, 0.8)'
+            ],
+            borderColor: [
+              'rgba(96, 165, 250, 1)',
+              'rgba(192, 132, 252, 1)',
+              'rgba(244, 114, 182, 1)'
+            ],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: 'white',
+                padding: 15,
+                font: {
+                  size: 14
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Connect Wallet
+    document.getElementById('connect-button').addEventListener('click', async () => {
+      if (typeof window.ethereum === 'undefined') {
+        document.getElementById('connection-error').textContent = 'MetaMask is not installed. Please install MetaMask to continue.';
+        document.getElementById('connection-error').classList.remove('hidden');
+        return;
+      }
+
+      try {
+        web3 = new Web3(window.ethereum);
+        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+        contract = new web3.eth.Contract(abi, contractAddress);
+
+        document.getElementById('wallet-address').textContent = accounts[0].substring(0, 6) + '...' + accounts[0].substring(38);
+        document.getElementById('wallet-info').classList.remove('hidden');
+        document.getElementById('connect-screen').classList.add('hidden');
+        document.getElementById('voting-interface').classList.remove('hidden');
+
+        initChart();
+        await updateVotes();
+        setInterval(updateVotes, 3000);
+      } catch (error) {
+        document.getElementById('connection-error').textContent = 'Failed to connect wallet: ' + error.message;
+        document.getElementById('connection-error').classList.remove('hidden');
+      }
+    });
+
+    // Vote Button
+    document.getElementById('vote-button').addEventListener('click', async () => {
+      const candidate = document.getElementById('candidate-select').value;
+
+      if (!candidate) {
+        showError('Please select a candidate');
+        return;
+      }
+
+      const voteButton = document.getElementById('vote-button');
+      const voteButtonText = document.getElementById('vote-button-text');
+
+      try {
+        voteButton.disabled = true;
+        voteButtonText.textContent = 'Processing...';
+
+        await contract.methods.voteForCandidate(candidate).send({ from: accounts[0] });
+
+        userHasVoted = true;
+        votedFor = candidate;
+        document.getElementById('user-vote-status').textContent = `Voted for ${candidate}`;
+
+        voteButtonText.textContent = '✓ Vote Cast';
+        document.getElementById('vote-status').classList.remove('hidden');
+        document.getElementById('vote-error').classList.add('hidden');
+
+        setTimeout(() => {
+          document.getElementById('vote-status').classList.add('hidden');
+        }, 5000);
+
+        await updateVotes();
+      } catch (error) {
+        voteButton.disabled = false;
+        voteButtonText.textContent = 'Cast Vote';
+        showError(error.message);
+      }
+    });
+
+    function showError(message) {
+      const errorDiv = document.getElementById('vote-error');
+      errorDiv.querySelector('p').textContent = '✗ ' + message;
+      errorDiv.classList.remove('hidden');
+      setTimeout(() => {
+        errorDiv.classList.add('hidden');
+      }, 5000);
+    }
+
+    // Update Votes
+    async function updateVotes() {
+      try {
+        const MohamedVotes = parseInt(await contract.methods.totalVotesFor("Mohamed").call());
+        const OmarVotes = parseInt(await contract.methods.totalVotesFor("Omar").call());
+        const AliVotes = parseInt(await contract.methods.totalVotesFor("Ali").call());
+
+        const totalVotes = MohamedVotes + OmarVotes + AliVotes;
+
+        document.getElementById("Mohamed-votes").textContent = MohamedVotes;
+        document.getElementById("Omar-votes").textContent = OmarVotes;
+        document.getElementById("Ali-votes").textContent = AliVotes;
+        document.getElementById("total-votes").textContent = totalVotes;
+
+        // Calculate percentages
+        const MohamedPercentage = totalVotes > 0 ? ((MohamedVotes / totalVotes) * 100).toFixed(1) : 0;
+        const OmarPercentage = totalVotes > 0 ? ((OmarVotes / totalVotes) * 100).toFixed(1) : 0;
+        const AliPercentage = totalVotes > 0 ? ((AliVotes / totalVotes) * 100).toFixed(1) : 0;
+
+        document.getElementById("Mohamed-percentage").textContent = MohamedPercentage + '%';
+        document.getElementById("Omar-percentage").textContent = OmarPercentage + '%';
+        document.getElementById("Ali-percentage").textContent = AliPercentage + '%';
+
+        document.getElementById("Mohamed-bar").style.width = MohamedPercentage + '%';
+        document.getElementById("Omar-bar").style.width = OmarPercentage + '%';
+        document.getElementById("Ali-bar").style.width = AliPercentage + '%';
+
+        // Update total voters (approximate - counting unique voters would require contract modification)
+        document.getElementById("total-voters").textContent = totalVotes;
+
+        // Find leading candidate
+        const votes = [
+          { name: 'Mohamed', count: MohamedVotes },
+          { name: 'Omar', count: OmarVotes },
+          { name: 'Ali', count: AliVotes }
+        ];
+        const leader = votes.reduce((max, candidate) => candidate.count > max.count ? candidate : max);
+        document.getElementById("leading-candidate").textContent = leader.count > 0 ? leader.name : '-';
+
+        // Update chart
+        if (chart) {
+          chart.data.datasets[0].data = [MohamedVotes, OmarVotes, AliVotes];
+          chart.update();
+        }
+      } catch (error) {
+        console.error('Error updating votes:', error);
+      }
+    }
+  </script>
+</body>
+
+</html>
