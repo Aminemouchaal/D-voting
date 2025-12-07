@@ -91,31 +91,8 @@ User Interface (Web Application)
 
 ---
 
-### 7. Use Case: Scientific Club Election
 
-**Scenario:** Computer Science Club presidential election
-
-**Candidates:**
-- Sarah Chen - Innovation Lead
-- Ahmed Hassan - Community Builder  
-- Maria Rodriguez - Technical Expert
-- David Kim - Event Coordinator
-
-**Implementation:**
-```solidity
-constructor(["Sarah Chen", "Ahmed Hassan", "Maria Rodriguez", "David Kim"])
-```
-
-**Results:**
-- 150 registered voters
-- 87% participation rate (131 votes)
-- Instant result compilation
-- Zero disputes or issues
-- Total gas cost: ~$0.50
-
----
-
-### 8. Key Features Implemented
+### 7. Key Features Implemented
 
 **For Voters:**
 - Wallet-based authentication
@@ -140,7 +117,7 @@ constructor(["Sarah Chen", "Ahmed Hassan", "Maria Rodriguez", "David Kim"])
 
 ---
 
-### 9. Security Features
+### 8. Security Features
 
 1. **Access Control**: Only admin can register voters and control sessions
 2. **Duplicate Prevention**: Blockchain prevents voting twice
@@ -150,11 +127,11 @@ constructor(["Sarah Chen", "Ahmed Hassan", "Maria Rodriguez", "David Kim"])
 
 ---
 
-### 10. Testing & Results
+### 9. Testing & Results
 
 **Test Environment:**
 - Network: Ethereum Sepolia Testnet
-- Test Accounts: 5 wallets (1 admin, 4 voters)
+- Test Accounts: 5 wallets (1 admin, 2 voters)
 - Duration: 2-day testing period
 
 **Test Results:**
@@ -226,7 +203,7 @@ Through this project, we gained hands-on experience in:
 
 ---
 
-### 15. Conclusion
+### 14. Conclusion
 
 VoteChain successfully demonstrates how blockchain technology can revolutionize voting systems by providing:
 - **Transparency**: All votes publicly verifiable on blockchain
@@ -243,7 +220,7 @@ The project proves that decentralized voting is not only feasible but also super
 
 ---
 
-### 16. References
+### 15. References
 
 1. Ethereum Foundation. (2024). Ethereum Documentation. https://ethereum.org/
 2. Solidity Documentation. (2024). https://docs.soliditylang.org/
@@ -252,9 +229,9 @@ The project proves that decentralized voting is not only feasible but also super
 
 ---
 
-### 17. Project Links
+### 16. Project Links
 
-- **Live Demo:** [https://votechain-demo.netlify.app](#)
+- **Live Demo:** [https://votechain-demo.netlify.app](https://d-voting-five.vercel.app/)](#)
 - **Smart Contract:** [View on Etherscan](https://sepolia.etherscan.io/address/0xaE17c3C594747ED538C29bFFAa2A2cC06a84ea60)
 - **Documentation:** Complete user guide included
 
