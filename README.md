@@ -256,12 +256,12 @@ The project proves that decentralized voting is not only feasible but also super
 
 - **Live Demo:** [https://votechain-demo.netlify.app](#)
 - **Smart Contract:** [View on Etherscan](https://sepolia.etherscan.io/address/0xaE17c3C594747ED538C29bFFAa2A2cC06a84ea60)
-- **GitHub Repository:** [https://github.com/yourusername/votechain](#)
 - **Documentation:** Complete user guide included
 
 ---
 
-**Project Team:** [Your Name/Team Members]  
-**Course:** Blockchain Development / Distributed Systems  
-**Submission Date:** December 2024  
-**Institution:** [Your University/Institution]
+**Project Team:** 
+         - Mouchaal Ahmed Elamine 
+         - Elazizi Abdeldjalil
+         - Youness Bermaki
+
